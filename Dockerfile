@@ -17,6 +17,6 @@ WORKDIR $WORK_PATH
 
 COPY . $WORK_PATH
 
-EXPOSE 3000
+EXPOSE 3003
 
 CMD [ "node", "src/app.js" ]
