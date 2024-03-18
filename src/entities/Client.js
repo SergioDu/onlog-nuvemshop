@@ -13,9 +13,9 @@ const client = new Sequelize(database, user, password, {
   port: 5432,
   dialectModule: pg,
   dialectOptions: {
-    ssl: {
-      require: true
-    }
+    // ssl: {
+    //   require: true
+    // }
   }
 })
 
