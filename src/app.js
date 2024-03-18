@@ -29,7 +29,7 @@ const dados = {
 console.log(dados)
 
 try {
-  // await ClientRepository.sync();
+  await ClientRepository.sync();
   
   console.log("Tabela sincronizada com sucesso!");
   app.listen(port, () => {
