@@ -6,11 +6,11 @@ import { deleteClient } from "../service/excluirCliente.js";
 
 export const routes = Router();
 
-routes.post('/api/v2/test', (req, res) => {
+routes.post('/api/v2/nuvemshop/test', (req, res) => {
   res.status(200).send('API FUNCIONANDO');
 })
 
-routes.get('/api/v2/authorization', async (req, res) => {
+routes.get('/api/v2/nuvemshop/authorization', async (req, res) => {
   try {
     const { code } = req.query;
     console.log(code);
@@ -22,7 +22,7 @@ routes.get('/api/v2/authorization', async (req, res) => {
   }
 })
 
-routes.post('/api/v2/calculoFrete', async (req, res) => {
+routes.post('/api/v2/nuvemshop/calculoFrete', async (req, res) => {
   try {
     const responseNuvem = await converterOnlogParaNuvemResponse(req.body);
     if (responseNuvem?.status === "error") {
@@ -37,7 +37,7 @@ routes.post('/api/v2/calculoFrete', async (req, res) => {
   }
 });
 
-routes.post('/api/v2/pedidoPago', async (req, res) => {
+routes.post('/api/v2/nuvemshop/pedidoPago', async (req, res) => {
   try {
     const { id, store_id } = req.body;
     await gerarEtiquetaEAtualizarPedido(id.toString().replace(" ", ""), store_id.toString().replace(" ", ""));
@@ -48,7 +48,7 @@ routes.post('/api/v2/pedidoPago', async (req, res) => {
   }
 })
 
-routes.post('/api/v2/excluirCliente', async (req, res) => {
+routes.post('/api/v2/nuvemshop/excluirCliente', async (req, res) => {
   const { store_id } = req.body;
   await deleteClient(store_id);
   res.status(200).send('OK');
