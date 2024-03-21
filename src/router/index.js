@@ -13,7 +13,6 @@ routes.post('/api/v2/nuvemshop/test', (req, res) => {
 routes.get('/api/v2/nuvemshop/authorization', async (req, res) => {
   try {
     const { code } = req.query;
-    console.log(code);
     await gerarToken(code);
     res.status(200).send('OK');
   } catch (e) {
@@ -24,13 +23,11 @@ routes.get('/api/v2/nuvemshop/authorization', async (req, res) => {
 
 routes.post('/api/v2/nuvemshop/calculoFrete', async (req, res) => {
   try {
-    console.log(req.body);
 
     const responseNuvem = await converterOnlogParaNuvemResponse(req.body);
     if (responseNuvem?.status === "error") {
       res.status(500).json({ message: responseNuvem.data });
     } else {
-      console.log('FOI')
       res.status(200).json(responseNuvem);
     }
   } catch(e) {

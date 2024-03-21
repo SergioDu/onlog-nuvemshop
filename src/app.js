@@ -2,7 +2,6 @@ import express from "express";
 import { config } from "dotenv";
 import { routes } from "./router/index.js";
 import cors from 'cors'
-import { ClientRepository } from "./entities/Client.js"
 
 config()
 
@@ -26,12 +25,7 @@ const dados = {
   database
 }
 
-console.log(dados)
-
 try {
-  // await ClientRepository.sync();
-  
-  console.log("Tabela sincronizada com sucesso!");
   app.listen(port, () => {
     console.log(`Servidor rodando na porta ${port}`);
   });

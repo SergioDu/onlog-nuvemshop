@@ -35,8 +35,6 @@ export const gerarToken = async (code) => {
 
   const shippingCarriers = await axios.post(`${urlNuvem}/${data.data.user_id}/shipping_carriers`, body, headers);
 
-  // console.log('shippingCarrier: ', shippingCarriers.data);
-
   const urlFretes = "https://apponlog.com.br/nuvemshop/frete/disponibilidade"
   const res = await axios.post(urlFretes, "", {
     headers: {
@@ -60,9 +58,7 @@ export const gerarToken = async (code) => {
       }
     });
 
-    setTimeout(() => {
-      console.log('option: ', resOption.data);
-    }, 700);
+    setTimeout(() => {}, 700);
   });
 
   await axios.post(`${urlNuvem}/${data.data.user_id}/webhooks`, { event: "order/paid", url: `${process.env.URL_CALLBACK}/pedidoPago` }, headers);

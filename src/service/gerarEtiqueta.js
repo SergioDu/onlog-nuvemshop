@@ -1,20 +1,22 @@
 import axios from "axios";
 import { config } from "dotenv";
-import { ClientRepository } from "../entities/Client.js";
 
-config()
+config();
 
 const urlNuvem = "https://api.tiendanube.com/v1";
 const urlOnlog = "https://apponlog.com.br/nuvemshop/pedido/incluirpedido"
 
 const pegarPedidoNuvem = async (id, user_id) => {
-  const dataClient = await ClientRepository.findOne({ where: { user_id } });
-  console.log(dataClient);
+  const dataClient = await pegarIntegracaoOnlog(user_id);
+
   const response = await axios.get(`${urlNuvem}/${user_id}/orders/${id}`, {
     "headers": {
-      "Authentication": `bearer ${ dataClient.access_token }`
+      "Authentication": `Bearer ${dataClient.data.tokenLoja}`
     }
   });
+
+  console.log(response.data);
+
   return response.data;
 }
 
@@ -25,17 +27,17 @@ const converterPedidoPraOnlog = async (id, user_id) => {
   const operador = separaOperadorEModalidade[0];
   const modalidade = separaOperadorEModalidade[1];
 
-  const dataClient = await ClientRepository.findOne({ where: { user_id } });
+  const dataClient = await pegarIntegracaoOnlog(user_id);
 
   const loja = await axios.get(`${urlNuvem}/${data.store_id}/store`, {
     "headers": {
-      "Authentication": `bearer ${ dataClient.access_token }`
+      "Authentication": `bearer ${dataClient.data.tokenLoja}`
     }
   });
 
   const searchLocations = await axios.get(`${urlNuvem}/${data.store_id}/locations`, {
     "headers": {
-      "Authentication": `bearer ${ dataClient.access_token }`
+      "Authentication": `bearer ${dataClient.data.tokenLoja}`
     }
   });
 
@@ -44,12 +46,12 @@ const converterPedidoPraOnlog = async (id, user_id) => {
   if (searchLocations.data.length > 1) {
     const getLocationInOrder = await axios.get(`${urlNuvem}/${data.store_id}/orders/${id}/fulfillment-orders`, {
       "headers": {
-        "Authentication": `bearer ${ dataClient.access_token }`
+        "Authentication": `bearer ${dataClient.data.tokenLoja}`
       }
     });
     const getLocation = await axios.get(`${urlNuvem}/${data.store_id}/locations/${getLocationInOrder.data[0].assigned_location.location_id}`, {
       "headers": {
-        "Authentication": `bearer ${ dataClient.access_token }`
+        "Authentication": `bearer ${dataClient.data.tokenLoja}`
       }
     });
     remetente.push(getLocation.data);
@@ -69,13 +71,13 @@ const converterPedidoPraOnlog = async (id, user_id) => {
 
   const volumeProdutos = data.products.map((prod) => {
     const objOnlog = {
-      "altura" : prod.height,
-      "largura" : prod.width,
-      "profundidade" : prod.depth,
-      "peso" : prod.weight,
-      "valorDeclarado" : prod.price,
+      "altura": prod.height,
+      "largura": prod.width,
+      "profundidade": prod.depth,
+      "peso": prod.weight,
+      "valorDeclarado": prod.price,
       "quantidade": prod.quantity,
-      "codigoVolume" : prod.id.toString()
+      "codigoVolume": prod.id.toString()
     }
     return objOnlog
   })
@@ -143,8 +145,19 @@ const gerarEtiquetaOnlog = async (id, user_id) => {
   return response.data
 }
 
+const pegarIntegracaoOnlog = async (user_id) => {
+  const { data } = await axios.post("https://apponlog.com.br/nuvemshop/integracao/listar", { usuarioId: user_id }, {
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${process.env.TOKEN}`
+    }
+  });
+
+  return data;
+}
+
 export const gerarEtiquetaEAtualizarPedido = async (id, user_id) => {
-  const dataClient = await ClientRepository.findOne({ where: { user_id } });
+  const dataClient = await pegarIntegracaoOnlog(user_id);
   const responseOnlog = await gerarEtiquetaOnlog(id, user_id);
   const objAttPedido = {
     shipping_tracking_url: `https://onlog.app.br/rastreio/${responseOnlog.data.postagens[0].objeto}`,
@@ -152,7 +165,7 @@ export const gerarEtiquetaEAtualizarPedido = async (id, user_id) => {
   }
   await axios.post(`${urlNuvem}/${user_id}/orders/${id}/fulfill`, objAttPedido, {
     "headers": {
-      "Authentication": `bearer ${ dataClient.access_token }`,
+      "Authentication": `bearer ${dataClient.data.tokenLoja}`,
       "Content-Type": 'application/json'
     }
   });
