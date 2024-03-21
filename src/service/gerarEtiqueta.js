@@ -11,7 +11,7 @@ const pegarPedidoNuvem = async (id, user_id) => {
 
   const response = await axios.get(`${urlNuvem}/${user_id}/orders/${id}`, {
     "headers": {
-      "Authentication": `Bearer ${dataClient.data.tokenLoja}`
+      "Authentication": `bearer ${dataClient.data.tokenLoja}`
     }
   });
 
@@ -86,17 +86,17 @@ const converterPedidoPraOnlog = async (id, user_id) => {
     "pedido": data.number,
     "obs": "",
     "remetente": {
-      "nome": loja.data.business_name,
+      "nome": !loja.data.business_name ? "Onlog" : loja.data.business_name,
       // "telefonePrincipal": loja.data.phone,
       "telefonePrincipal": "",
       "emailPrincipal": loja.data.email,
-      "cpfCnpj": loja.data.business_id,
+      "cpfCnpj": !loja.data.business_id ? "12345678909" : loja.data.business_id,
       "rgIe": "", //Tem que colocar caso for CNPJ
       "cep": remetente.data[0].address.zipcode,
       "logradouro": enderecoRemetente.logradouro.split(" ")[0] || remetente.data[0].address.locality,
       "endereco": enderecoRemetente.logradouro || remetente.data[0].address.street,
       "numero": remetente.data[0].address.number,
-      "complemento": remetente.data[0].address.floor,
+      "complemento": !remetente.data[0].address.floor ? "" : remetente.data[0].address.floor,
       "bairro": enderecoRemetente.bairro || remetente.data[0].address.locality,
       "cidade": enderecoRemetente.localidade || remetente.data[0].address.city,
       "uf": enderecoRemetente.uf || remetente.data[0].address.province.code
@@ -133,11 +133,14 @@ const converterPedidoPraOnlog = async (id, user_id) => {
 }
 
 const gerarEtiquetaOnlog = async (id, user_id) => {
-  const convertParaOnlog = await converterPedidoPraOnlog(id, user_id)
+  const convertParaOnlog = await converterPedidoPraOnlog(id, user_id);
+
+  const dataClient = await pegarIntegracaoOnlog(user_id);
+  
   const response = await axios.post(urlOnlog, convertParaOnlog, {
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${process.env.TOKEN}`
+      "Authorization": `Bearer ${dataClient.data.tokenOnlogApi}`
     }
   });
   return response.data

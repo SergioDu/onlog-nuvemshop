@@ -45,7 +45,7 @@ routes.post('/api/v2/nuvemshop/pedidoPago', async (req, res) => {
     res.status(200).send("OK");
   } catch (e) {
     console.log(JSON.stringify(e));
-    res.status(500).json({ message: e.message });
+    res.status(500).json({ message: e.response.data.message });
   }
 })
 
