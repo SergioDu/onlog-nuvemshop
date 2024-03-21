@@ -1,6 +1,5 @@
 import axios from "axios";
 import { config } from "dotenv";
-import { ClientRepository } from "../entities/Client.js";
 
 config()
 

@@ -1,7 +1,7 @@
 import axios from "axios";
 import { config } from "dotenv";
 
-config()
+config();
 
 const url = "https://apponlog.com.br/nuvemshop/frete/valores";
 
@@ -16,19 +16,16 @@ function addBusinessDays(businessDays) {
   while (count < businessDays) {
     startDate.setDate(startDate.getDate() + 1);
 
-    // Verifica se o dia atual é um dia útil (segunda a sexta)
     if (startDate.getDay() !== 0 && startDate.getDay() !== 6) {
       count++;
     }
   }
 
-  // Obtém o offset do fuso horário
   const timezoneOffset = startDate.getTimezoneOffset();
   const offsetHours = Math.floor(Math.abs(timezoneOffset) / 60);
   const offsetMinutes = Math.abs(timezoneOffset) % 60;
   const offsetSign = timezoneOffset > 0 ? '-' : '+';
 
-  // Formata a data no formato desejado
   const formattedDate = startDate.toISOString().replace(/\.\d{3}Z$/, `${offsetSign}${pad(offsetHours)}${pad(offsetMinutes)}`);
 
   return formattedDate;
@@ -49,13 +46,15 @@ const converterNuvemParaOnlog = (obj) => {
     return infoOnlog
   });
 
+  const usuarioLojaId = obj.store_id;
+
   const objOnlog = {
     "frete": {
-        "idcotacao": 1,
-        "cepori": obj.origin.postal_code,
-        "cepdes": obj.destination.postal_code,
-        "vldeclarado": 0,
-        "produtos": infoProdutos
+      "idcotacao": 1,
+      "cepori": obj.origin.postal_code,
+      "cepdes": obj.destination.postal_code,
+      "usuarioLojaId": usuarioLojaId,
+      "produtos": infoProdutos
     }
   };
 
@@ -96,6 +95,6 @@ export const converterOnlogParaNuvemResponse = async (obj) => {
   const responseParaNuvem = {
     rates: tiposDeEnvioOnlogPraNuvem
   }
-  // console.log('responseNuvem: ', responseParaNuvem);
+
   return responseParaNuvem
 }
