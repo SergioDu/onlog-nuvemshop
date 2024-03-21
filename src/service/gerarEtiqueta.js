@@ -9,15 +9,11 @@ const urlOnlog = "https://apponlog.com.br/nuvemshop/pedido/incluirpedido"
 const pegarPedidoNuvem = async (id, user_id) => {
   const dataClient = await pegarIntegracaoOnlog(user_id);
 
-  console.log(dataClient);
-
   const response = await axios.get(`${urlNuvem}/${user_id}/orders/${id}`, {
     "headers": {
       "Authentication": `Bearer ${dataClient.data.tokenLoja}`
     }
   });
-
-  console.log(response.data);
 
   return response.data;
 }

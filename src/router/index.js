@@ -37,6 +37,8 @@ routes.post('/api/v2/nuvemshop/calculoFrete', async (req, res) => {
 });
 
 routes.post('/api/v2/nuvemshop/pedidoPago', async (req, res) => {
+  console.log(req.body);
+
   try {
     const { id, store_id } = req.body;
     await gerarEtiquetaEAtualizarPedido(id.toString().replace(" ", ""), store_id.toString().replace(" ", ""));
