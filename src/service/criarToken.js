@@ -67,7 +67,4 @@ export const gerarToken = async (code) => {
   });
 
   await axios.post(`${urlNuvem}/${data.data.user_id}/webhooks`, { event: "order/paid", url: `${process.env.URL_CALLBACK}/pedidoPago` }, headers);
-
-  await ClientRepository.create({ ...data.data, id_shipping_carrier: shippingCarriers.data.id });
-
 }
